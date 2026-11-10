@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "my-web-proxy",
+  "main": "src/index.js",
+  "compatibility_date": "2026-11-10",
+  "compatibility_flags": ["nodejs_compat"],
+  "browser": {
+    "binding": "MYBROWSER"
+  }
+}
