@@ -6,5 +6,9 @@
   "compatibility_flags": ["nodejs_compat"],
   "browser": {
     "binding": "MYBROWSER"
+  },
+  "assets": {
+    "directory": "./public/",
+    "binding": "ASSETS"
   }
 }
