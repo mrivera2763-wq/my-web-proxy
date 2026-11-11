@@ -1,3 +1,4 @@
+
 import puppeteer from "@cloudflare/puppeteer";
 
 export default {
@@ -7,7 +8,7 @@ export default {
     const cors = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type"
+      "Access-Control-Allow-Headers": "Content-Type, Authorization"
     };
 
     if (request.method === "OPTIONS") {
@@ -20,6 +21,25 @@ export default {
         project: "My Web Proxy",
         browserRun: "configured"
       }, { headers: cors });
+    }
+
+    // Protect API routes with the private access key.
+    if (url.pathname.startsWith("/api/")) {
+      const authorization = request.headers.get("Authorization");
+      const expected = `Bearer ${env.PROXY_ACCESS_KEY}`;
+
+      if (
+        !env.PROXY_ACCESS_KEY ||
+        authorization !== expected
+      ) {
+        return Response.json({
+          ok: false,
+          error: "Unauthorized"
+        }, {
+          status: 401,
+          headers: cors
+        });
+      }
     }
 
     if (url.pathname === "/api/test-browser") {
@@ -40,11 +60,24 @@ export default {
         return Response.json({
           ok: false,
           error: String(error)
-        }, { status: 500, headers: cors });
+        }, {
+          status: 500,
+          headers: cors
+        });
 
       } finally {
         if (browser) await browser.close();
       }
+    }
+
+    if (url.pathname === "/api/session") {
+      return Response.json({
+        ok: false,
+        message: "Navigation endpoint not implemented yet."
+      }, {
+        status: 501,
+        headers: cors
+      });
     }
 
     return new Response("My Web Proxy API is running!", {
