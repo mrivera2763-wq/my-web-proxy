@@ -8,6 +8,10 @@
     "binding": "MYBROWSER"
   },
   "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  }
+  "assets": {
     "directory": "./public/",
     "binding": "ASSETS"
   }
