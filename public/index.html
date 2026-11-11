@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Web Proxy</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #101116;
+      color: #eeeef2;
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      background: #191a22;
+      border-bottom: 1px solid #30313b;
+    }
+
+    .logo { font-size: 20px; font-weight: bold; }
+    .logo span { color: #a78bfa; }
+
+    main { max-width: 1100px; margin: 55px auto; padding: 20px; }
+
+    .panel {
+      background: #191a22;
+      border: 1px solid #30313b;
+      border-radius: 14px;
+      padding: 24px;
+    }
+
+    h1 { font-size: 25px; margin-top: 0; }
+    p { color: #aaaab8; }
+
+    .address {
+      display: flex;
+      gap: 10px;
+      margin-top: 25px;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      background: #101116;
+      color: white;
+      border: 1px solid #393a47;
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 15px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 18px;
+      background: #7955d9;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover { background: #906df0; }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .secondary { background: #292a35; }
+
+    #status {
+      margin-top: 18px;
+      font-size: 14px;
+      color: #aaaab8;
+    }
+
+    .browser {
+      background: white;
+      color: #222;
+      min-height: 350px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 20px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 500px;
+      border: 0;
+      background: white;
+    }
+
+    footer {
+      text-align: center;
+      color: #777887;
+      padding: 25px;
+      font-size: 12px;
+    }
+
+    @media(max-width:600px) {
+      .address { flex-direction: column; }
+      main { margin-top: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">My Web <span>Proxy</span></div>
+</header>
+
+<main>
+  <section class="panel">
+    <h1>Private browsing</h1>
+    <p>Welcome to your personal remote browsing workspace.</p>
+
+    <div class="address">
+      <input id="url" type="text"
+        placeholder="Enter a website address...">
+      <button onclick="navigate()">Go</button>
+    </div>
+
+    <div class="toolbar">
+      <button class="secondary" onclick="back()">← Back</button>
+      <button class="secondary" onclick="forward()">Forward →</button>
+      <button class="secondary" onclick="reload()">Reload</button>
+    </div>
+
+    <div id="status">Ready to browse.</div>
+
+    <div class="browser">
+      <iframe id="view"
+        title="Web browsing view"
+        referrerpolicy="no-referrer">
+      </iframe>
+    </div>
+  </section>
+</main>
+
+<footer>
+  My Web Proxy · Remote browsing project
+</footer>
+
+<script>
+  const frame = document.getElementById("view");
+  const address = document.getElementById("url");
+  const status = document.getElementById("status");
+
+  function navigate() {
+    let value = address.value.trim();
+
+    if (!value) return;
+
+    if (!/^https?:\/\//i.test(value)) {
+      value = "https://" + value;
+    }
+
+    try {
+      const parsed = new URL(value);
+
+      if (!["http:", "https:"].includes(parsed.protocol)) {
+        throw new Error("Invalid protocol");
+      }
+
+      frame.src = parsed.href;
+      address.value = parsed.href;
+      status.textContent = "Opening: " + parsed.hostname;
+    } catch {
+      status.textContent = "Invalid web address.";
+    }
+  }
+
+  function back() {
+    try { frame.contentWindow.history.back(); }
+    catch { status.textContent = "Back unavailable."; }
+  }
+
+  function forward() {
+    try { frame.contentWindow.history.forward(); }
+    catch { status.textContent = "Forward unavailable."; }
+  }
+
+  function reload() {
+    try { frame.contentWindow.location.reload(); }
+    catch { status.textContent = "Reload unavailable."; }
+  }
+
+  address.addEventListener("keydown", event => {
+    if (event.key === "Enter") navigate();
+  });
+</script>
+
+</body>
+</html>
