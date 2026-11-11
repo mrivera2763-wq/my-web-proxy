@@ -80,8 +80,13 @@ export default {
       });
     }
 
-    return new Response("My Web Proxy API is running!", {
-      headers: cors
-    });
+if (url.pathname === "/" || url.pathname === "/index.html") {
+  return env.ASSETS.fetch(request);
+}
+
+return new Response("Not Found", {
+  status: 404,
+  headers: cors
+});
   }
 };
