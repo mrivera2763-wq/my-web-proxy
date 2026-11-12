@@ -157,8 +157,12 @@ export default {
             ok: true,
             title: await page.title()
           });
-        } catch {
-          return json({ ok: false, error: "Browser test failed" }, 500);
+        } catch (error) {
+          return json({
+            ok: false,
+            error: "Browser test failed",
+            details: String(error)
+          }, 500);
         } finally {
           if (browser) await browser.close();
         }
