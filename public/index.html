@@ -5,199 +5,271 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Web Proxy</title>
+
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
-      background: #101116;
-      color: #eeeef2;
+      min-height: 100vh;
+      background: #090d16;
+      color: #e5e7eb;
       font-family: Arial, sans-serif;
     }
 
-    header {
-      height: 64px;
+    .login-screen {
+      min-height: 100vh;
       display: flex;
+      justify-content: center;
       align-items: center;
-      padding: 0 22px;
-      background: #191a22;
-      border-bottom: 1px solid #30313b;
+      padding: 20px;
     }
 
-    .logo { font-size: 20px; font-weight: bold; }
-    .logo span { color: #a78bfa; }
-
-    main { max-width: 1100px; margin: 55px auto; padding: 20px; }
-
-    .panel {
-      background: #191a22;
-      border: 1px solid #30313b;
-      border-radius: 14px;
-      padding: 24px;
+    .login-box {
+      width: 100%;
+      max-width: 380px;
+      padding: 32px;
+      background: #111827;
+      border: 1px solid #263449;
+      border-radius: 16px;
+      text-align: center;
     }
 
-    h1 { font-size: 25px; margin-top: 0; }
-    p { color: #aaaab8; }
-
-    .address {
-      display: flex;
-      gap: 10px;
-      margin-top: 25px;
+    h1 {
+      margin-top: 0;
+      color: #60a5fa;
     }
 
     input {
-      flex: 1;
-      min-width: 0;
-      background: #101116;
-      color: white;
-      border: 1px solid #393a47;
-      border-radius: 8px;
+      width: 100%;
       padding: 14px;
-      font-size: 15px;
+      margin: 12px 0;
+      border: 1px solid #374151;
+      border-radius: 8px;
+      background: #090d16;
+      color: white;
+      font-size: 16px;
     }
 
     button {
+      padding: 12px 18px;
       border: 0;
       border-radius: 8px;
-      padding: 12px 18px;
-      background: #7955d9;
+      background: #2563eb;
       color: white;
+      font-size: 15px;
       cursor: pointer;
-      font-weight: bold;
     }
 
-    button:hover { background: #906df0; }
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .login-box button {
+      width: 100%;
+    }
+
+    #message {
+      color: #f87171;
+      font-size: 14px;
+    }
+
+    #app {
+      display: none;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
     .toolbar {
       display: flex;
       gap: 8px;
-      margin: 20px 0;
       flex-wrap: wrap;
+      margin: 20px 0;
     }
 
-    .secondary { background: #292a35; }
-
-    #status {
-      margin-top: 18px;
-      font-size: 14px;
-      color: #aaaab8;
-    }
-
-    .browser {
-      background: white;
-      color: #222;
-      min-height: 350px;
-      border-radius: 10px;
-      overflow: hidden;
-      margin-top: 20px;
+    #url {
+      flex: 1;
+      min-width: 180px;
     }
 
     iframe {
       width: 100%;
-      height: 500px;
-      border: 0;
+      height: 70vh;
+      border: 1px solid #263449;
+      border-radius: 12px;
       background: white;
     }
 
-    footer {
-      text-align: center;
-      color: #777887;
-      padding: 25px;
-      font-size: 12px;
-    }
-
-    @media(max-width:600px) {
-      .address { flex-direction: column; }
-      main { margin-top: 20px; }
+    #status {
+      color: #9ca3af;
+      margin-bottom: 12px;
     }
   </style>
 </head>
+
 <body>
 
-<header>
-  <div class="logo">My Web <span>Proxy</span></div>
-</header>
+  <section id="loginScreen" class="login-screen">
+    <div class="login-box">
+      <h1>My Web Proxy</h1>
+      <p>Private browsing</p>
 
-<main>
-  <section class="panel">
-    <h1>Private browsing</h1>
-    <p>Welcome to your personal remote browsing workspace.</p>
+      <form id="loginForm">
+        <input
+          id="password"
+          type="password"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+          required
+        >
 
-    <div class="address">
-      <input id="url" type="text"
-        placeholder="Enter a website address...">
-      <button onclick="navigate()">Go</button>
-    </div>
+        <button type="submit">Login</button>
+      </form>
 
-    <div class="toolbar">
-      <button class="secondary" onclick="back()">← Back</button>
-      <button class="secondary" onclick="forward()">Forward →</button>
-      <button class="secondary" onclick="reload()">Reload</button>
-    </div>
-
-    <div id="status">Ready to browse.</div>
-
-    <div class="browser">
-      <iframe id="view"
-        title="Web browsing view"
-        referrerpolicy="no-referrer">
-      </iframe>
+      <p id="message"></p>
     </div>
   </section>
-</main>
 
-<footer>
-  My Web Proxy · Remote browsing project
-</footer>
+  <main id="app">
+    <header>
+      <h1>My Web Proxy</h1>
+      <button onclick="logout()">Logout</button>
+    </header>
 
-<script>
-  const frame = document.getElementById("view");
-  const address = document.getElementById("url");
-  const status = document.getElementById("status");
+    <div class="toolbar">
+      <input id="url" type="text" placeholder="Enter a web address">
+      <button onclick="navigate()">Go</button>
+      <button onclick="back()">Back</button>
+      <button onclick="forward()">Forward</button>
+      <button onclick="reload()">Reload</button>
+    </div>
 
-  function navigate() {
-    let value = address.value.trim();
+    <p id="status">Ready to browse</p>
 
-    if (!value) return;
+    <iframe id="view" title="Browser view"></iframe>
+  </main>
 
-    if (!/^https?:\/\//i.test(value)) {
-      value = "https://" + value;
+  <script>
+    const loginScreen = document.getElementById("loginScreen");
+    const app = document.getElementById("app");
+    const message = document.getElementById("message");
+    const frame = document.getElementById("view");
+    const address = document.getElementById("url");
+    const status = document.getElementById("status");
+
+    async function checkSession() {
+      try {
+        const response = await fetch("/api/me");
+        const data = await response.json();
+
+        loginScreen.style.display = data.authenticated ? "none" : "flex";
+        app.style.display = data.authenticated ? "block" : "none";
+      } catch {
+        message.textContent = "Connection error.";
+      }
     }
 
-    try {
-      const parsed = new URL(value);
+    document.getElementById("loginForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
 
-      if (!["http:", "https:"].includes(parsed.protocol)) {
-        throw new Error("Invalid protocol");
+      message.textContent = "Checking...";
+
+      try {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            password: document.getElementById("password").value
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          message.textContent = "Incorrect password.";
+          return;
+        }
+
+        document.getElementById("password").value = "";
+        await checkSession();
+
+      } catch {
+        message.textContent = "Connection error.";
+      }
+    });
+
+    async function logout() {
+      await fetch("/api/logout", { method: "POST" });
+      frame.src = "about:blank";
+      address.value = "";
+      await checkSession();
+    }
+
+    function navigate() {
+      let value = address.value.trim();
+      if (!value) return;
+
+      if (!/^https?:\/\//i.test(value)) {
+        value = "https://" + value;
       }
 
-      frame.src = parsed.href;
-      address.value = parsed.href;
-      status.textContent = "Opening: " + parsed.hostname;
-    } catch {
-      status.textContent = "Invalid web address.";
+      try {
+        const parsed = new URL(value);
+
+        if (!["http:", "https:"].includes(parsed.protocol)) {
+          throw new Error("Invalid protocol");
+        }
+
+        frame.src = parsed.href;
+        address.value = parsed.href;
+        status.textContent = "Opening: " + parsed.hostname;
+
+      } catch {
+        status.textContent = "Invalid web address.";
+      }
     }
-  }
 
-  function back() {
-    try { frame.contentWindow.history.back(); }
-    catch { status.textContent = "Back unavailable."; }
-  }
+    function back() {
+      try {
+        frame.contentWindow.history.back();
+      } catch {
+        status.textContent = "Back unavailable.";
+      }
+    }
 
-  function forward() {
-    try { frame.contentWindow.history.forward(); }
-    catch { status.textContent = "Forward unavailable."; }
-  }
+    function forward() {
+      try {
+        frame.contentWindow.history.forward();
+      } catch {
+        status.textContent = "Forward unavailable.";
+      }
+    }
 
-  function reload() {
-    try { frame.contentWindow.location.reload(); }
-    catch { status.textContent = "Reload unavailable."; }
-  }
+    function reload() {
+      try {
+        frame.contentWindow.location.reload();
+      } catch {
+        status.textContent = "Reload unavailable.";
+      }
+    }
 
-  address.addEventListener("keydown", event => {
-    if (event.key === "Enter") navigate();
-  });
-</script>
+    address.addEventListener("keydown", event => {
+      if (event.key === "Enter") navigate();
+    });
+
+    checkSession();
+  </script>
 
 </body>
 </html>
